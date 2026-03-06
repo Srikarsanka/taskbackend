@@ -270,29 +270,60 @@ app.post("/device-token", async (req, res) => {
 
 // ─── Cron Jobs for Notifications ──────────────────────────────────────────────
 
-async function sendNotificationToAll(title, body) {
+async function sendNotificationToAll(timeOfDay) {
   try {
     const devices = await Device.find();
     if (devices.length === 0) return;
 
     const tokens = devices.map(d => d.token);
     
-    // Check if there are any pending tasks
-    const pendingTasks = await Task.countDocuments({ completed: false });
-    if (pendingTasks === 0) return; // Everyone is done, no need to remind
+    // Check how many tasks are pending
+    const pendingTasks = await Task.find({ completed: false });
+    const pendingCount = pendingTasks.length;
+
+    let title = "";
+    let body = "";
+
+    if (timeOfDay === "morning") {
+      title = "🌅 Good morning!";
+      if (pendingCount === 0) {
+        body = "You have no pending tasks! Add some tasks to keep your streak going.";
+      } else if (pendingCount === 1) {
+        body = `Don't forget to complete your task: "${pendingTasks[0].task_name}" today.`;
+      } else {
+        body = `You have ${pendingCount} tasks pending. Let's get to work!`;
+      }
+    } else if (timeOfDay === "evening") {
+      if (pendingCount === 0) {
+        title = "🌙 Good night";
+        body = "Awesome job today! All tasks completed. Have a great night!";
+      } else if (pendingCount === 1) {
+        title = "🌙 Almost done!";
+        body = `You have exactly one task left: "${pendingTasks[0].task_name}". Check it off before bed!`;
+      } else {
+        title = "🌙 It's getting late";
+        body = `You still have ${pendingCount} tasks pending. Try to knock them out before the day ends!`;
+      }
+    } else if (timeOfDay === "test") {
+      title = "🚀 10:15 PM Test!";
+      if (pendingCount === 0) {
+        body = "Test: All completed! Good night!";
+      } else if (pendingCount === 1) {
+        body = `Test: Only 1 task left: "${pendingTasks[0].task_name}".`;
+      } else {
+        body = `Test: ${pendingCount} tasks remaining.`;
+      }
+    }
 
     const message = {
-      notification: {
-        title,
-        body: `${body}\nYou have ${pendingTasks} task${pendingTasks !== 1 ? 's' : ''} still pending.`
-      },
+      notification: { title, body },
       tokens
     };
 
     const response = await admin.messaging().sendEachForMulticast(message);
     console.log(`📡 Sent notifications: ${response.successCount} successful, ${response.failureCount} failed`);
 
-    // Clean up invalid tokens (optional but good practice)
+    // Clean up invalid tokens
     if (response.failureCount > 0) {
       const failedTokens = [];
       response.responses.forEach((resp, idx) => {
@@ -312,13 +343,19 @@ async function sendNotificationToAll(title, body) {
 // 10:00 AM Cron
 cron.schedule("0 10 * * *", () => {
   console.log("⏰ Running 10:00 AM cron job");
-  sendNotificationToAll("🌅 Good morning!", "Don't forget to complete your tasks today.");
+  sendNotificationToAll("morning");
 });
 
 // 10:00 PM Cron
 cron.schedule("0 22 * * *", () => {
   console.log("⏰ Running 10:00 PM cron job");
-  sendNotificationToAll("� It's 10 PM", "Check off your remaining tasks before the day ends!");
+  sendNotificationToAll("evening");
+});
+
+// 10:15 PM TEST Cron (Runs at exactly 22:15 every day)
+cron.schedule("15 22 * * *", () => {
+  console.log("⏰ Running 10:15 PM Test cron job");
+  sendNotificationToAll("test");
 });
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
