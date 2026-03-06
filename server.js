@@ -309,16 +309,16 @@ async function sendNotificationToAll(title, body) {
   }
 }
 
-// 11:00 AM Cron
-cron.schedule("0 11 * * *", () => {
-  console.log("⏰ Running 11:00 AM cron job");
+// 10:00 AM Cron
+cron.schedule("0 10 * * *", () => {
+  console.log("⏰ Running 10:00 AM cron job");
   sendNotificationToAll("🌅 Good morning!", "Don't forget to complete your tasks today.");
 });
 
-// 5:00 PM Cron
-cron.schedule("0 17 * * *", () => {
-  console.log("⏰ Running 5:00 PM cron job");
-  sendNotificationToAll("🌆 It's 5 PM", "Check off your remaining tasks before the day ends!");
+// 10:00 PM Cron
+cron.schedule("0 22 * * *", () => {
+  console.log("⏰ Running 10:00 PM cron job");
+  sendNotificationToAll("� It's 10 PM", "Check off your remaining tasks before the day ends!");
 });
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
