@@ -344,19 +344,19 @@ async function sendNotificationToAll(timeOfDay) {
 cron.schedule("0 10 * * *", () => {
   console.log("⏰ Running 10:00 AM cron job");
   sendNotificationToAll("morning");
-});
+}, { timezone: "Asia/Kolkata" });
 
 // 10:00 PM Cron
 cron.schedule("0 22 * * *", () => {
   console.log("⏰ Running 10:00 PM cron job");
   sendNotificationToAll("evening");
-});
+}, { timezone: "Asia/Kolkata" });
 
-// 10:15 PM TEST Cron (Runs at exactly 22:15 every day)
-cron.schedule("15 22 * * *", () => {
-  console.log("⏰ Running 10:15 PM Test cron job");
+// 10:20 PM TEST Cron (Runs at exactly 22:20 every day)
+cron.schedule("20 22 * * *", () => {
+  console.log("⏰ Running 10:20 PM Test cron job");
   sendNotificationToAll("test");
-});
+}, { timezone: "Asia/Kolkata" });
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
