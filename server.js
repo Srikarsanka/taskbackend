@@ -352,9 +352,9 @@ cron.schedule("0 22 * * *", () => {
   sendNotificationToAll("evening");
 }, { timezone: "Asia/Kolkata" });
 
-// 10:20 PM TEST Cron (Runs at exactly 22:20 every day)
-cron.schedule("20 22 * * *", () => {
-  console.log("⏰ Running 10:20 PM Test cron job");
+// 10:30 PM TEST Cron (Runs at exactly 22:30 every day)
+cron.schedule("30 22 * * *", () => {
+  console.log("⏰ Running 10:30 PM Test cron job");
   sendNotificationToAll("test");
 }, { timezone: "Asia/Kolkata" });
 
