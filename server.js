@@ -293,7 +293,25 @@ async function sendNotificationToAll(timeOfDay) {
       } else {
         body = `You have ${pendingCount} tasks pending. Let's get to work!`;
       }
+    } else if (timeOfDay === "noon") {
+      title = "☀️ Midday Check-in";
+      if (pendingCount === 0) {
+        body = "All done for the morning! Keep it up.";
+      } else if (pendingCount === 1) {
+        body = `Half the day is gone! Ready to tackle "${pendingTasks[0].task_name}"?`;
+      } else {
+        body = `You have ${pendingCount} tasks pending. Time for a productivity boost!`;
+      }
     } else if (timeOfDay === "evening") {
+      title = "🌆 Evening Check-in";
+      if (pendingCount === 0) {
+        body = "Great progress today! All tasks are clear.";
+      } else if (pendingCount === 1) {
+        body = `Almost done for the day! Just "${pendingTasks[0].task_name}" left.`;
+      } else {
+        body = `The day is wrapping up. You still have ${pendingCount} tasks pending!`;
+      }
+    } else if (timeOfDay === "night") {
       if (pendingCount === 0) {
         title = "🌙 Good night";
         body = "Awesome job today! All tasks completed. Have a great night!";
@@ -340,22 +358,28 @@ async function sendNotificationToAll(timeOfDay) {
   }
 }
 
-// 10:00 AM Cron
-cron.schedule("0 10 * * *", () => {
-  console.log("⏰ Running 10:00 AM cron job");
+// 9:00 AM Cron
+cron.schedule("0 9 * * *", () => {
+  console.log("⏰ Running 9:00 AM cron job");
   sendNotificationToAll("morning");
 }, { timezone: "Asia/Kolkata" });
 
-// 10:00 PM Cron
-cron.schedule("0 22 * * *", () => {
-  console.log("⏰ Running 10:00 PM cron job");
+// 12:00 PM Cron
+cron.schedule("0 12 * * *", () => {
+  console.log("⏰ Running 12:00 PM cron job");
+  sendNotificationToAll("noon");
+}, { timezone: "Asia/Kolkata" });
+
+// 6:00 PM Cron
+cron.schedule("0 18 * * *", () => {
+  console.log("⏰ Running 6:00 PM cron job");
   sendNotificationToAll("evening");
 }, { timezone: "Asia/Kolkata" });
 
-// 10:30 PM TEST Cron (Runs at exactly 22:30 every day)
-cron.schedule("30 22 * * *", () => {
-  console.log("⏰ Running 10:30 PM Test cron job");
-  sendNotificationToAll("test");
+// 10:05 PM Cron
+cron.schedule("5 22 * * *", () => {
+  console.log("⏰ Running 10:05 PM cron job");
+  sendNotificationToAll("night");
 }, { timezone: "Asia/Kolkata" });
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
