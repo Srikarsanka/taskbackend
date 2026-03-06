@@ -136,6 +136,14 @@ app.post("/tasks", async (req, res) => {
 
     const newTask = new Task({ task_name: task_name.trim() });
     const savedTask = await newTask.save();
+    
+    // --- TEST FEATURE: Send notification 10 seconds after creating a task ---
+    console.log("⏱️ Task added. Scheduling test notification in 10 seconds...");
+    setTimeout(() => {
+      sendNotificationToAll("🚀 Test Notification!", `You just added: "${savedTask.task_name}". Stay productive!`);
+    }, 10000); // 10,000 milliseconds = 10 seconds
+    // ------------------------------------------------------------------------
+
     res.status(201).json(savedTask);
   } catch (err) {
     res.status(500).json({ message: "Error creating task", error: err.message });
